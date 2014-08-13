@@ -2,8 +2,6 @@
 # Changes wallpaper to the most up to date SDO image; http://sdowww.lmsal.com/suntoday/#
 require 'open-uri'
 
-require 'open-uri'
-
 def internet?
   	begin
     		true if open("http://www.google.com/")
