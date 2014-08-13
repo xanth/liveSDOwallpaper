@@ -1,11 +1,15 @@
 #!/usr/bin/env ruby
 # Changes wallpaper to the most up to date SDO image; http://sdowww.lmsal.com/suntoday/#
 require 'open-uri'
-require 'resolv-replace'
-require 'ping'
+
+require 'open-uri'
 
 def internet?
-  Ping.pingecho "google.com", 1, 80
+  	begin
+    		true if open("http://www.google.com/")
+  	rescue
+    		false
+  	end
 end
 
 if internet?
@@ -22,3 +26,4 @@ if internet?
 	end
 
 	system( "bash imageSet.sh" )
+end
