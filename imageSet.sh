@@ -1,5 +1,5 @@
 #!/bin/sh
-FILE="/Users/xanth/git/liveishSDOwallpaper/theSun.jpg"
+FILE="$1/theSun.jpg"
 
 /usr/bin/osascript <<END
 tell application "Finder"
