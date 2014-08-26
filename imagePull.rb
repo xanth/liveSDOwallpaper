@@ -2,7 +2,7 @@
 # Changes wallpaper to the most up to date SDO image; http://sdowww.lmsal.com/suntoday/#
 require 'httparty'
 
-def f(res)
+def process(res)
   installLocation = File.dirname(File.expand_path $0)
   local_sun_file = "#{installLocation}/theSun.jpg"
 
@@ -12,7 +12,7 @@ def f(res)
     io.write res.parsed_response
   end
   
-  # system "bash #{installLocation}/imageSet.sh #{installLocation}"
+  system "bash #{installLocation}/imageSet.sh #{installLocation}"
 end
 
 
@@ -20,9 +20,9 @@ end
 t = Time.now.utc
 
 remote_sun_file = "http://sdowww.lmsal.com/sdomedia/SunInTime/#{t.year}/#{format('%.2d', t.month)}/#{format('%.2d', t.day)}/f_211_193_171.jpg"
-respone = HTTParty.get(remote_sun_file);
 
-case respone.code
-when 200
-  f(respone)
+response = HTTParty.get(remote_sun_file);
+
+if response.success?
+  process(response)
 end
