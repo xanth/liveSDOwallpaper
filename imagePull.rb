@@ -1,19 +1,55 @@
 #!/usr/bin/env ruby
-# Changes wallpaper to the most up to date SDO image; http://sdowww.lmsal.com/suntoday/#
+
 require 'open-uri'
 
-def internet?
-  open('http://www.google.com/') ? true : false
+def main
+  install_location = File.dirname(__FILE__)
+  temp_sun_file = "#{install_location}/tempSun.jpg"
+  local_sun_file = "#{install_location}/theSun.jpg"
+  remote_sun_file = 'http://sdowww.lmsal.com/sdomedia/SunInTime/mostrecent/f_211_193_171.jpg'
+
+  download_with_clobber(remote_sun_file, temp_sun_file)
+rescue => exception
+  output_error exception
+  exit_with_failure
+else
+  rotate_files local_sun_file, temp_sun_file
+  system "bash #{install_location}/imageSet.sh #{install_location}"
+ensure
+  delete temp_sun_file
 end
 
-if internet?
-  
-  t = Time.now.utc
-  installLocation = File.dirname(File.expand_path $0)
-  remote_sun_file = "http://sdowww.lmsal.com/sdomedia/SunInTime/#{t.year}/#{format('%.2d', t.month)}/#{format('%.2d', t.day)}/f_211_193_171.jpg"
-  local_sun_file = "#{installLocation}/theSun.jpg"
-
-  File.delete local_sun_file if File.exist? local_sun_file
-  open(local_sun_file, 'wb') { |file| file << open(remote_sun_file).read }
-  system "bash #{installLocation}/imageSet.sh #{installLocation}"
+def download_with_clobber(remote_source, local_destination)
+  delete local_destination
+  open(local_destination, 'wb') { |file| file << open(remote_source).read }
 end
+
+def rotate_files(old_file, new_file)
+  backup_file = "#{old_file}.bak"
+  rename old_file, backup_file
+  rename new_file, old_file
+rescue => exception
+  output_error exception
+  exit_with_failure
+else
+  delete backup_file
+  delete new_file
+end
+
+def delete(file)
+  File.delete file if File.exist? file
+end
+
+def rename(old, new)
+  File.rename old, new if File.exist? old
+end
+
+def output_error(exception)
+  $stderr.puts "\e[31mError:\e[0m #{exception.class} - #{exception.message}" if exception.is_a? Exception
+end
+
+def exit_with_failure
+  exit false
+end
+
+main
